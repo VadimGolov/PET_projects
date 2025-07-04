@@ -80,6 +80,7 @@ def resize(widget: ttk.Widget, start_width: int, target_width: int = 0, step: in
 def show_faultbox(title: str, message: str, parent: tk.Tk | ttk.Frame) -> None:
     """
     Тёмное модальное окно для вывода ошибки
+
     """
     icon: PhotoImage = PhotoImage(file=resource_path('image/logo.png'))
 
