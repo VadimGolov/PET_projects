@@ -669,7 +669,7 @@ def install_pass(charm_args: Args) -> bool:
     status: bool = False
 
     pycharm_path: str = charm_args.entry.get().split('/')[-1]
-    pattern_path: re.Pattern = re.compile(r'^pycharm[a-z.0-9]*$', flags=re.IGNORECASE)
+    pattern_path: re.Pattern = re.compile(r'^pycharm[ a-z.0-9]*$', flags=re.IGNORECASE)
 
     if charm_args.entry.get().strip() == '':
         if not status:
