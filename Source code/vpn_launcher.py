@@ -109,8 +109,8 @@ def close_advert_tab(timeout: int = 15, check_interval: float = 1) -> None:
     :param check_interval: Интервал между проверками (сек).
 
     """
-    initial_titles: list[str] = [title for title in getwin.getAllTitles() if title]
-    initial_count: int = len(initial_titles)
+    # initial_titles: list[str] = [title for title in getwin.getAllTitles() if title]
+    # initial_count: int = len(initial_titles)
 
     # close_upper_window(initial_count, timeout, check_interval)
     close_match_window(timeout, check_interval)
