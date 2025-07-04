@@ -144,96 +144,10 @@ def show_faultbox(title: str, message: str, parent: tk.Tk | ttk.Frame) -> None:
     )
     button.grid(row=0, column=0)
 
-    def on_enter(_: tk.Event) -> None:
-        button.grid_configure(padx=2, pady=2)
-
-    def on_leave(_: tk.Event) -> None:
-        button.grid_configure(padx=0, pady=0)
-
-    button.bind('<Enter>', on_enter)
-    button.bind('<Leave>', on_leave)
+    button.bind('<Enter>', lambda _: button.grid_configure(padx=2, pady=2))
+    button.bind('<Leave>', lambda _: button.grid_configure(padx=0, pady=0))
 
     box.wait_window()
-
-# def show_faultbox(title: str, message: str, parent: tk.Tk | ttk.Frame) -> None:
-#     """
-#     Тёмное модальное окно для вывода ошибки
-#
-#     """
-#     icon: PhotoImage = PhotoImage(file=resource_path('image/logo.png'))
-#
-#     box: tk.Toplevel = tk.Toplevel(parent)
-#     box.title(title)
-#     box.configure(bg='#2e2e2e')
-#     box.resizable(False, False)
-#     box.attributes('-topmost', True)
-#     box.iconphoto(False, icon)
-#
-#     box.transient(parent)
-#     box.grab_set()
-#
-#     # Размеры окна
-#     w, h = 360, 150
-#
-#     # Центрирование по родителю
-#     parent.update_idletasks()
-#     px, py = parent.winfo_rootx(), parent.winfo_rooty()
-#     pw, ph = parent.winfo_width(), parent.winfo_height()
-#     x, y = px + (pw - w) // 2, py + (ph - h) // 2
-#     box.geometry(f'{w}x{h}+{x}+{y}')
-#
-#     # Grid layout: 5 строк, 3 колонки (края 10px)
-#     for i in range(3):
-#         box.grid_columnconfigure(i, weight=0)
-#
-#     box.grid_columnconfigure(1, weight=1)  # центр
-#     box.grid_rowconfigure(0, minsize=5)  # верхний отступ
-#     box.grid_rowconfigure(1, weight=1)  # текст
-#     box.grid_rowconfigure(2, minsize=5)  # отступ
-#     box.grid_rowconfigure(3, minsize=35)  # кнопка
-#     box.grid_rowconfigure(4, minsize=15)  # нижний отступ
-#
-#     # Метка для текста ошибки
-#     label = tk.Label(
-#             box,
-#             text=message,
-#             bg='#2e2e2e',
-#             fg='#ff6464',
-#             font=('Arial', 12, 'bold'),
-#             wraplength=320,
-#             justify='center'
-#     )
-#     label.grid(row=1, column=1, sticky='nsew', padx=10)
-#
-#     # Рамка с обводкой под кнопку OK
-#     button_frame = tk.Frame(box, bg='#cfcdc8')
-#     button_frame.grid(row=3, column=1)
-#
-#     # Кнопка OK
-#     button = tk.Button(
-#             button_frame,
-#             text='OK',
-#             command=box.destroy,
-#             bg='#404040',
-#             fg='white',
-#             activebackground='#303030',
-#             activeforeground='white',
-#             font=('Arial', 11),
-#             relief='flat',
-#             width=15
-#     )
-#     button.pack()
-#
-#     def on_enter(_: tk.Event) -> None:
-#         button.pack_configure(padx=2, pady=2)
-#
-#     def on_leave(_: tk.Event) -> None:
-#         button.pack_configure(padx=0, pady=0)
-#
-#     button.bind('<Enter>', on_enter)
-#     button.bind('<Leave>', on_leave)
-#
-#     box.wait_window()
 
 
 def entry(parent: tk.Widget, **kwargs) -> tk.Entry:
