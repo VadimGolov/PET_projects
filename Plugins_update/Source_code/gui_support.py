@@ -204,7 +204,7 @@ def resource_path(relative_path: str, dev_base_path: Optional[Path] = None) -> s
     if not relative_path:
         return ''
 
-    base_path: Path = (Path(getattr(sys, '_MEIPASS')) if hasattr(sys, '_MEIPASS') else dev_base_path or Path.cwd())
+    base_path: Path = (Path(getattr(sys, '_MEIPASS')) if hasattr(sys, '_MEIPASS') else dev_base_path or Path(__file__).parent)
 
     return str(base_path / relative_path)
 

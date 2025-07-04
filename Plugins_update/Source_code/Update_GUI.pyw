@@ -76,6 +76,7 @@ def resize(widget: ttk.Widget, start_width: int, target_width: int = 0, step: in
     widget.after(delay, resize, widget, start_width + step, target_width, step, delay, remove)
     return None
 
+
 def show_faultbox(title: str, message: str, parent: tk.Tk | ttk.Frame) -> None:
     """
     Тёмное модальное окно для вывода ошибки
