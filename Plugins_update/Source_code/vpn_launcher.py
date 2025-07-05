@@ -33,27 +33,7 @@ def is_vpn_connected() -> bool:
         return False
 
 
-def close_psiphon(psi_name: re.Pattern, timeout: int = 15, check_interval: float = 1) -> None:
-    """
-    Ожидает появления окна, имя которого соответствует REGEXP_PATH, и закрывает его.
-
-    """
-    stop_time: float = time.time() + timeout
-
-    while time.time() <= stop_time:
-        current_titles: list[str] = [title for title in getwin.getAllTitles() if title]
-
-        for title in current_titles:
-            if re.search(psi_name, title):
-                windows = getwin.getWindowsWithTitle(title)
-                for each_win in windows:
-                    each_win.close()
-                    return
-
-        time.sleep(check_interval)
-
-
-def run_psiphon(launch_path: Path) -> subprocess.Popen | None:
+def run_vpn(launch_path: Path) -> subprocess.Popen | None:
     """
     Запускает Psiphon в фоновом режиме и возвращает объект процесса.
 
@@ -61,13 +41,6 @@ def run_psiphon(launch_path: Path) -> subprocess.Popen | None:
     :return: Объект процесса Popen.
 
     """
-    psi_pattern: re.Pattern = re.compile(r'^psiphon', re.IGNORECASE)
-    if re.search(psi_pattern, str(launch_path.name)):
-        close_psiphon(psi_pattern)
-
-    time.sleep(3)
-
-    # Запускает Psiphon
     try:
         return subprocess.Popen(
             [str(launch_path)],
@@ -79,24 +52,24 @@ def run_psiphon(launch_path: Path) -> subprocess.Popen | None:
         return None
 
 
-def close_upper_window(initial_count: int, timeout: int, check_interval: float) -> None:
-    """
-    Ожидает появление нового окна и закрывает его комбинацией Ctrl+W.
+# def close_upper_window(initial_count: int, timeout: int, check_interval: float) -> None:
+#     """
+#     Ожидает появление нового окна и закрывает его комбинацией Ctrl+W.
+#
+#     """
+#     stop_time: float = time.time() + timeout
+#     pyautogui.FAILSAFE = False
+#
+#     while time.time() <= stop_time:
+#         current_titles: list[str] = [title for title in getwin.getAllTitles() if title]
+#
+#         if len(current_titles) > initial_count:
+#             pyautogui.hotkey('ctrl', 'w')
+#             return
+#         time.sleep(check_interval)
 
-    """
-    stop_time: float = time.time() + timeout
-    pyautogui.FAILSAFE = False
 
-    while time.time() <= stop_time:
-        current_titles: list[str] = [title for title in getwin.getAllTitles() if title]
-
-        if len(current_titles) > initial_count:
-            pyautogui.hotkey('ctrl', 'w')
-            return
-        time.sleep(check_interval)
-
-
-def close_match_window(timeout: int, check_interval: float) -> None:
+def close_match(pattern: re.Pattern, timeout: int, check_interval: float) -> None:
     """
     Ожидает появления окна, имя которого соответствует REGEXP_PATH, и закрывает его.
 
@@ -107,7 +80,7 @@ def close_match_window(timeout: int, check_interval: float) -> None:
         current_titles: list[str] = [title for title in getwin.getAllTitles() if title]
 
         for title in current_titles:
-            if re.search(REGEXP_PATH, title):
+            if re.search(pattern, title):
                 windows = getwin.getWindowsWithTitle(title)
                 for each_win in windows:
                     each_win.close()
@@ -129,7 +102,7 @@ def close_advert_tab(timeout: int = 15, check_interval: float = 1) -> None:
     # initial_count: int = len(initial_titles)
 
     # close_upper_window(initial_count, timeout, check_interval)
-    close_match_window(timeout, check_interval)
+    close_match(REGEXP_PATH, timeout, check_interval)
 
 
 def force_focus(title: str) -> None:
@@ -155,19 +128,24 @@ def launch(launch_path: Path) -> bool:
     :param launch_path:
     :return: Если все операции кроме закрытия рекламы успешны True иначе False
     """
-    if run_psiphon(launch_path) is None:
+    vpn_name: re.Pattern = re.compile(r'^psiphon', re.IGNORECASE)
+    psi_true: bool = True if re.match(vpn_name, str(launch_path.name)) else False
+
+    if psi_true:
+        close_match(vpn_name, 15, 1)
+        time.sleep(1)
+
+    if run_vpn(launch_path) is None:
         return False
 
-    for _ in range(60):
+    for _ in range(30):
         if is_vpn_connected():
             break
         time.sleep(2)
     else:
         return False
 
-    psiphon_name = re.compile(r'^psiphon', re.IGNORECASE)
-
-    if re.search(psiphon_name, str(launch_path.name)):
+    if psi_true:
         close_advert_tab()
         force_focus(title='Обновление и установка plugins для PyCharm v1.0')
 

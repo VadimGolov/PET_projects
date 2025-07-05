@@ -35,6 +35,8 @@ def lock_buttons(frame: ttk.Frame) -> None:
         if isinstance(child, tk.Checkbutton):
             checkbox_readonly(child, True)
 
+    frame.update_idletasks()
+
 
 def unlock_buttons(frame: ttk.Frame) -> None:
     """
@@ -48,6 +50,8 @@ def unlock_buttons(frame: ttk.Frame) -> None:
             entry_readonly(child, False)
         if isinstance(child, tk.Checkbutton):
             checkbox_readonly(child, False)
+
+    frame.update_idletasks()
 
 
 def resize(widget: ttk.Widget, start_width: int, target_width: int = 0, step: int = 1, delay: int = 3, remove: bool = True) -> None:
@@ -456,8 +460,8 @@ def launch_vpn(exe_path: Path, vpn_args: Args) -> None:
 
     """
     lock_buttons(vpn_args.frame)
-    vpn_args.frame.update_idletasks()
 
+    # success: bool = launch(exe_path)
     success: bool = launch(exe_path)
     status: str = vpn_args.label.cget('text')
 
