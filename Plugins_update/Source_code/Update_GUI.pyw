@@ -453,9 +453,10 @@ def manage_marks(option: bool | None = None) -> None:
 def launch_vpn(exe_path: Path, vpn_args: Args) -> None:
     """
     Запускает VPN
-S
+
     """
     lock_buttons(vpn_args.frame)
+    vpn_args.frame.update_idletasks()
 
     success: bool = launch(exe_path)
     status: str = vpn_args.label.cget('text')
@@ -465,7 +466,7 @@ S
             vpn_active(vpn_args)
             unlock_buttons(vpn_args.frame)
     else:
-        lock_buttons(vpn_args.frame)
+        unlock_buttons(vpn_args.frame)
         show_faultbox(f'{vpn_args.title} :: Ошибка', 'Не удалось подключиться к VPN. Попробуйте ещё раз.', vpn_args.frame)
 
     return None

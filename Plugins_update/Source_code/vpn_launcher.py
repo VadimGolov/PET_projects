@@ -33,6 +33,26 @@ def is_vpn_connected() -> bool:
         return False
 
 
+def close_psiphon(psi_name: re.Pattern, timeout: int = 15, check_interval: float = 1) -> None:
+    """
+    Ожидает появления окна, имя которого соответствует REGEXP_PATH, и закрывает его.
+
+    """
+    stop_time: float = time.time() + timeout
+
+    while time.time() <= stop_time:
+        current_titles: list[str] = [title for title in getwin.getAllTitles() if title]
+
+        for title in current_titles:
+            if re.search(psi_name, title):
+                windows = getwin.getWindowsWithTitle(title)
+                for each_win in windows:
+                    each_win.close()
+                    return
+
+        time.sleep(check_interval)
+
+
 def run_psiphon(launch_path: Path) -> subprocess.Popen | None:
     """
     Запускает Psiphon в фоновом режиме и возвращает объект процесса.
@@ -41,15 +61,11 @@ def run_psiphon(launch_path: Path) -> subprocess.Popen | None:
     :return: Объект процесса Popen.
 
     """
-    # Закрывает Psiphon если он открыт но не подключен
-    psi_pattern: re.Pattern = re.compile(r'^Psiphon', re.IGNORECASE)
-    current_titles: list[str] = [title for title in getwin.getAllTitles() if title]
+    psi_pattern: re.Pattern = re.compile(r'^psiphon', re.IGNORECASE)
+    if re.search(psi_pattern, str(launch_path.name)):
+        close_psiphon(psi_pattern)
 
-    for title in current_titles:
-        if re.search(psi_pattern, title):
-            windows = getwin.getWindowsWithTitle(title)
-            for each in windows:
-                each.close()
+    time.sleep(3)
 
     # Запускает Psiphon
     try:
@@ -149,8 +165,11 @@ def launch(launch_path: Path) -> bool:
     else:
         return False
 
-    close_advert_tab()
-    force_focus(title='Обновление и установка plugins для PyCharm v1.0')
+    psiphon_name = re.compile(r'^psiphon', re.IGNORECASE)
+
+    if re.search(psiphon_name, str(launch_path.name)):
+        close_advert_tab()
+        force_focus(title='Обновление и установка plugins для PyCharm v1.0')
 
     return True
 
