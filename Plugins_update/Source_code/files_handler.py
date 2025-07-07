@@ -295,7 +295,7 @@ def update_setup(context: 'GuiContext', index: int, option: bool) -> None:
 def setup_plugins(context: 'GuiContext', charm_folder: str) -> None:
     """
     Если install_path не существует, создает её.
-    Если install_path уществует, то проверят папки в unpacked_path.
+    Если install_path уже существует, то проверят папки в unpacked_path.
     Удаляет.папки с такими же именами в install_path остальные папки не трогает.
     Копирует все плагины из unpacked_path в install_path
 
@@ -309,7 +309,7 @@ def setup_plugins(context: 'GuiContext', charm_folder: str) -> None:
         install_path.mkdir(parents=True, exist_ok=True)
 
     else:
-        # Список папок для удаления
+        # Список папок для удаления (подтянуть из базы данных)
         storage_folders = tuple(plugin['plugin_path'].lower() for plugin in context.plugins_set if plugin['plugin_path'] is not False)
 
         # Удаление старых plugin'ов
@@ -331,6 +331,7 @@ def setup_plugins(context: 'GuiContext', charm_folder: str) -> None:
                     update_setup(context, index, False)
                 else:
                     update_setup(context, index, True)
+                    # print(f'Плагин {plugin['name']}: скопирован из {src_path.stem} в {des_path.stem}')  # !!!
 
 
 def copy_with_status(source: Path, destination: Path) -> str:

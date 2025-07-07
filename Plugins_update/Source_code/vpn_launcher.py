@@ -52,26 +52,23 @@ def run_vpn(launch_path: Path) -> subprocess.Popen | None:
         return None
 
 
-# def close_upper_window(initial_count: int, timeout: int, check_interval: float) -> None:
-#     """
-#     Ожидает появление нового окна и закрывает его комбинацией Ctrl+W.
-#
-#     """
-#     stop_time: float = time.time() + timeout
-#     pyautogui.FAILSAFE = False
-#
-#     while time.time() <= stop_time:
-#         current_titles: list[str] = [title for title in getwin.getAllTitles() if title]
-#
-#         if len(current_titles) > initial_count:
-#             pyautogui.hotkey('ctrl', 'w')
-#             return
-#         time.sleep(check_interval)
+def close_psiphon(pattern: re.Pattern) -> None:
+    """
+    Закрывает Psiphon, если он открыт.
+
+    """
+    current_titles: list[str] = [title for title in getwin.getAllTitles() if title]
+
+    for title in current_titles:
+        for win in getwin.getWindowsWithTitle(title):
+            if re.match(pattern, win.title):
+                win.close()
+                return
 
 
 def close_match(pattern: re.Pattern, timeout: int, check_interval: float) -> None:
     """
-    Ожидает появления окна, имя которого соответствует REGEXP_PATH, и закрывает его.
+    Ожидает появления окна с рекламой и закрывает его.
 
     """
     stop_time: float = time.time() + timeout
@@ -80,45 +77,12 @@ def close_match(pattern: re.Pattern, timeout: int, check_interval: float) -> Non
         current_titles: list[str] = [title for title in getwin.getAllTitles() if title]
 
         for title in current_titles:
-            if re.search(pattern, title):
-                windows = getwin.getWindowsWithTitle(title)
-                for each_win in windows:
-                    each_win.close()
+            for win in getwin.getWindowsWithTitle(title):
+                if re.search(pattern, win.title):
+                    win.close()
                     return
 
         time.sleep(check_interval)
-
-
-def close_advert_tab(timeout: int = 15, check_interval: float = 1) -> None:
-    """
-    Ждёт появления нового окна и закрывает его,
-    Затем ищет закрывает окно, соответствующее REGEXP_PATH.
-
-    :param timeout: Максимальное время ожидания (сек).
-    :param check_interval: Интервал между проверками (сек).
-
-    """
-    # initial_titles: list[str] = [title for title in getwin.getAllTitles() if title]
-    # initial_count: int = len(initial_titles)
-
-    # close_upper_window(initial_count, timeout, check_interval)
-    close_match(REGEXP_PATH, timeout, check_interval)
-
-
-def force_focus(title: str) -> None:
-    """
-    Возобновляет окна и возвращает его в исходное состояние.
-
-    :param title: Заголовок окна.
-
-    """
-    windows = getwin.getWindowsWithTitle(title)
-    if windows:
-        win = windows[0]
-        win.minimize()
-        time.sleep(0.1)  # дать системе время обработать сворачивание
-        win.restore()
-        win.activate()
 
 
 def launch(launch_path: Path) -> bool:
@@ -132,8 +96,7 @@ def launch(launch_path: Path) -> bool:
     psi_true: bool = True if re.match(vpn_name, str(launch_path.name)) else False
 
     if psi_true:
-        close_match(vpn_name, 15, 1)
-        time.sleep(1)
+        close_psiphon(vpn_name)
 
     if run_vpn(launch_path) is None:
         return False
@@ -146,8 +109,7 @@ def launch(launch_path: Path) -> bool:
         return False
 
     if psi_true:
-        close_advert_tab()
-        force_focus(title='Обновление и установка plugins для PyCharm v1.0')
+        close_match(REGEXP_PATH, 15, 1)
 
     return True
 
