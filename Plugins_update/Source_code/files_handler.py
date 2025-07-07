@@ -331,7 +331,7 @@ def setup_plugins(context: 'GuiContext', charm_folder: str) -> None:
                     update_setup(context, index, False)
                 else:
                     update_setup(context, index, True)
-                    # print(f'Плагин {plugin['name']}: скопирован из {src_path.stem} в {des_path.stem}')  # !!!
+                    print(f'Плагин {plugin['name']}: скопирован из {src_path.stem} в {des_path.stem}')  # !!!
 
 
 def copy_with_status(source: Path, destination: Path) -> str:
